@@ -34,5 +34,3 @@ _rnssf:	.ASCIZ	'%d'
 _rnum:	.WORD	0
 	
 .SECT	.BSS
-num:	.SPACE 30
-numf:	.SPACE 1
