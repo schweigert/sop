@@ -1,3 +1,0 @@
-PREFIX='dirname $0'
-export MALLOC_CHECK_=0
-${PREFIX}/as88 $@
