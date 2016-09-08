@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <semaphore.h>
 #include <signal.h>
+#include <assert.h>
 
 #define MAX 2000
 
@@ -15,24 +16,28 @@ int *n;
 sem_t *sem;
 
 void f1(){
-	int i = 0, temp;
+	puts("Processo filho");
+	int i = 0, temp, rc;
 	for (i = 0; i < MAX; i++){
-		if (sem_wait(sem) == -1) exit (10);
+		rc = sem_wait(sem); assert(rc == 0);
+		puts("FILHO!");
 		temp = *n;
 		temp++;
 		*n = temp;
-		if (sem_post(sem) == -1) exit (11);
+		rc = sem_post(sem); assert(rc == 0);
 	}
 }
 
 void f2(){
-	int i = 0, temp;
+	puts("Processo pai");
+	int i = 0, temp, rc;
 	for (i = 0; i < MAX; i++){
-		if (sem_wait(sem) == -1) exit (12);
+		rc = sem_wait(sem); assert(rc == 0);
+		puts("PAI!");
 		temp = *n;
 		temp--;
 		*n = temp;
-		if (sem_post(sem) == -1) exit (13);
+		rc = sem_post(sem); assert(rc == 0);
 	}
 }
 
@@ -40,7 +45,7 @@ int main (void){
 
 
 	// Memoria Compartilhada
-
+	puts("Memória criada");
 	int fd = shm_open("/shm", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 	if ( fd == -1 ) exit(1);
 	
@@ -51,13 +56,13 @@ int main (void){
 	if ( n == MAP_FAILED) exit(3);
 
 	// Semáforo
-
-	sem = sem_open("/sem", O_CREAT, 0664, 0);
+	puts("Criando semáforo");
+	sem = sem_open("/sem", O_CREAT, 0664, 1);
 	if (sem == SEM_FAILED) exit (4);
 
 	pid_t f;
 	int status;
-
+	puts("Fork");
 	f = fork();
 	if (f == 0){
 		f1();
